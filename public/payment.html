@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<style>
+   
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    #pay-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #pay-btn:hover {
+        background-color: #218838;
+    }
+
+    /* Make the page responsive for smaller screens */
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 24px;
+        }
+
+        #pay-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+    }
+</style>
+
+
+<body>
+    <h1>Complete Your Payment</h1>
+    <button id="pay-btn">Pay Now</button>
+
+    <script>
+        document.getElementById('pay-btn').addEventListener('click', async function () {
+            const response = await fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: 500,
+                    currency: 'INR',
+                    email: 'user@example.com' 
+                })
+            });
+
+            const order = await response.json();
+
+            const options = {
+                "key": 'rzp_test_PrAFqiJ15E5L8G',  // Replace with Razorpay Key ID
+                "amount": order.amount, 
+                "currency": order.currency,
+                "name": "My Company",
+                "description": "Test Transaction",
+                "order_id": order.id, // This is the Order ID generated in the server
+                "handler": function (response) {
+                    // Redirect to a success endpoint that will send the email
+                    window.location.href = `/payment-success?razorpay_order_id=${response.razorpay_order_id}&razorpay_payment_id=${response.razorpay_payment_id}`;
+                },
+                "prefill": {
+                    "email": "user@example.com", 
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
