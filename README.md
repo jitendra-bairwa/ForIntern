@@ -1,6 +1,6 @@
 Please add first
-Google client id.
-Google secret key.
+Google client id(for google authentication).
+Google secret key(for google authentication).
 
 
 Install the package dependencies by running npm install.
